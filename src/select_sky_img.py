@@ -29,16 +29,13 @@ dataset = load_dataset("MultimodalUniverse/legacysurvey", split="train", streami
 output_dir = "processed_images"
 os.makedirs(output_dir, exist_ok=True)
 
-processed_imgs = []
-
 # Define constant values
 TRUE_BLACK = (0,0,0)
-BRIGHTNESS_INCREASE = 75
-SATURATION_SCALE = 10
+
 
 # Process the images
 for i, data in enumerate(dataset):
-    if i >= 1:  # Process only the first image for demonstration
+    if i >= 4:  # Process only the first image for demonstration
         break
 
     # Check if 'blobmodel' exists in the data
@@ -55,49 +52,52 @@ for i, data in enumerate(dataset):
         # Convert PIL image to NumPy array for further processing
         img = np.array(blobmodel_image)
 
-        # convert img to grayscale
+        # Convert image to grayscale
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        # identify the bright points & create a mask for them
+        # Identify the bright points & create a mask for them
         _, thresh_img = cv2.threshold(gray_img, 50, 255, cv2.THRESH_BINARY)
-        bright_points_mask = thresh_img == 255
 
-        # apply TRUE_BLACK to darker (unmasked) pixels
-        img[~bright_points_mask] = TRUE_BLACK
+        # Find contours of the bright spots
+        contours, _ = cv2.findContours(thresh_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        h,s,v = cv2.split(hsv_img)
+        # Create a copy of the original image to draw on
+        processed_img = img.copy()
 
-        s = s.astype(np.float32)
-        s *= SATURATION_SCALE
+        # Define the size of the uniform square (3x3 pixels)
+        square_size = 1
+        half_size = square_size // 2
 
-        s = np.clip(s, 0, 255)
-        s = s.astype(np.uint8)
+        # Loop over each contour
+        for contour in contours:
+            # Calculate the moments of the contour to find the centroid
+            M = cv2.moments(contour)
+            if M["m00"] != 0:
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
 
-        hsv_img = cv2.merge([h,s,v])
-        enhanced_img = cv2.cvtColor(hsv_img, cv2.COLOR_HSV2BGR)
+                # Define the top-left corner of the 3x3 square
+                startX = cX - half_size
+                startY = cY - half_size
+
+                # Ensure the square is within image boundaries
+                if startX >= 0 and startY >= 0 and (startX + square_size) <= img.shape[1] and (startY + square_size) <= img.shape[0]:
+                    # Draw the 3x3 square with white color (255, 255, 255)
+                    processed_img[startY:startY + square_size, startX:startX + square_size] = (255, 255, 255)
         
-        # increase brightness of remaining points
-        enhanced_img[bright_points_mask] = cv2.add(enhanced_img[bright_points_mask], BRIGHTNESS_INCREASE)
-        enhanced_img = np.clip(enhanced_img, 0, 255)  # ensured pixel values remain valid
-
-        # Save the processed image as a PNG file
-        processed_output_path = os.path.join(output_dir, f"processed_image_{i}.png")
-        #cv2.imwrite(processed_output_path, enhanced_img)
-        cv2.imwrite(processed_output_path, img)
-
-        #processed_imgs.append(enhanced_img)
-        processed_imgs.append(img)
-
         # Remove 'blobmodel' img
         if os.path.exists(output_path):
             os.remove(output_path)
 
-        print(f"Processed image {i} saved as {processed_output_path}.")
-    else:
-        print(f"No blobmodel available for entry {i}")
+        # convert img to grayscale
+        gray_img2 = cv2.cvtColor(processed_img, cv2.COLOR_BGR2GRAY)
 
+        # identify the bright points & create a mask for them
+        _, thresh_img2 = cv2.threshold(gray_img2, 250, 255, cv2.THRESH_BINARY)
+        bright_points_mask2 = thresh_img2 == 255
 
+        # apply TRUE_BLACK to darker (unmasked) pixels
+        processed_img[~bright_points_mask2] = TRUE_BLACK
 
-
-
+        # Save the processed image
+        cv2.imwrite(f"processed_img_{i}.png", processed_img)
