@@ -8,6 +8,18 @@ and the closest looking constellation will be found.
 
 import cv2
 import numpy as np
+import os
+
+# image_path = "@my-app/public/user-input/constellation.jpg"
+# Correct the path to reference the public/user-input folder
+image_path = os.path.join(os.path.dirname(__file__), "../public/user-input/userImage.png")
+image_path = os.path.normpath(image_path)  # Normalize for cross-platform compatibility
+desired_points = 10
+
+# Check if the image exists
+if not os.path.exists(image_path):
+    print("Image not found. Make sure it was saved correctly.")
+    exit()
 
 def segment_img(image_path, desired_points):
     '''
@@ -43,6 +55,8 @@ def segment_img(image_path, desired_points):
     # Draw the simplified combined contour
     cv2.drawContours(output, [approx_points.astype(int)], -1, (0, 0, 255), 2)  # Red for approximation
 
+    cv2.imwrite(f"public/processed-user-input/processed_user_img.png", output)
+
     return output
 
 def calculate_epsilon_for_points(contour, target_points, initial_epsilon=0.01, max_iterations=1000):
@@ -57,7 +71,9 @@ def calculate_epsilon_for_points(contour, target_points, initial_epsilon=0.01, m
         approx = cv2.approxPolyDP(contour, epsilon, True)
         current_points = len(approx)
 
-        print(f"Current points: {current_points}, Epsilon: {epsilon}")
+        # DEBUG STATEMENT ------------------------------------------------
+        #print(f"Current points: {current_points}, Epsilon: {epsilon}")
+        # END OF DEBUG STATEMENT -------------------------------------------
 
         if current_points == target_points:
             break
@@ -75,3 +91,5 @@ def calculate_epsilon_for_points(contour, target_points, initial_epsilon=0.01, m
 
     print(f"Final Epsilon: {epsilon}, Final Number of Points: {len(approx)}")
     return approx
+
+segment_img(image_path, desired_points)
