@@ -101,7 +101,19 @@ export default function DrawingSection() {
         throw new Error("Failed to simplify the target star img");
       }
 
+      const resizeStarImage = () => {
+        const processedImg = document.getElementById("processedImage") as HTMLImageElement;
+        const starImg = document.getElementById("starImage") as HTMLImageElement;
+  
+        if (processedImg && starImg) {
+          starImg.style.width = `${processedImg.width}px`;
+          starImg.style.height = `${processedImg.height}px`;
+          console.log("✅ Resized `star_img.png` to match `processed_user_img.png`.");
+        }
+      };
+
       // ----------------------------------------------------------------------------------------------------
+
 
       // Update only the processed image without refreshing the drawing
       setProcessedImageUrl(`/processed-user-input/processed_user_img.png?timestamp=${new Date().getTime()}`);
@@ -205,6 +217,7 @@ export default function DrawingSection() {
           </div>
         </div>
       )}
+
     </div>
   )
 }

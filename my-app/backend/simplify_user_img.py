@@ -171,25 +171,9 @@ def find_best_star(usr_image_path):
     
     # Cache to store user coordinates for a given number of points
     user_coords_cache = {}
-    
-    # 1. Fetch last index from the "coordinates" table
-    response = supabase.table("coordinates") \
-        .select("*") \
-        .order("index", desc=True) \
-        .limit(1) \
-        .execute()
-
-    if not response.data:
-        print("No star data found in the database.")
-        return None, None
-    
-    last_index = response.data[0].get("index")
-    if last_index is None or last_index < 1:
-        print("Invalid last index found in the database.")
-        return None, None
 
     # 2. Select a random sample of 100 star indexes
-    star_indexes = random.sample(range(0, last_index + 1), min(50, last_index + 1))
+    star_indexes = random.sample(range(0, 301), 50)
 
     best_index = None
     best_score = float('inf')
