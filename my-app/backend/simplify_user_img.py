@@ -10,12 +10,22 @@ import cv2
 import numpy as np
 import math
 import os
+import random
+
+from supabase import create_client, Client
 
 # image_path = "@my-app/public/user-input/constellation.jpg"
 # Correct the path to reference the public/user-input folder
 image_path = os.path.join(os.path.dirname(__file__), "../public/user-input/userImage.png")
 image_path = os.path.normpath(image_path)  # Normalize for cross-platform compatibility
 desired_points = 10
+
+# Replace with your actual Supabase project URL and service role key
+SUPABASE_URL = "https://frukqmrecrlqojwkcwob.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZydWtxbXJlY3JscW9qd2tjd29iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczOTc1MTE3NiwiZXhwIjoyMDU1MzI3MTc2fQ.Qhob4_nTXIWVpiVmBbKU4r9cakD35tNcOIkp5AHHc_U"  # Use SERVICE ROLE KEY for writes
+
+# Initialize Supabase client
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Check if the image exists
 if not os.path.exists(image_path):
@@ -58,7 +68,6 @@ def segment_img(image_path, desired_points):
     cv2.imwrite(f"public/processed-user-input/processed_user_img.png", output)
 
     # Make approx points in right dimension
-
     return output, approx_points
 
 def calculate_epsilon_for_points(contour, target_points, initial_epsilon=0.01, max_iterations=1000):
@@ -77,7 +86,7 @@ def calculate_epsilon_for_points(contour, target_points, initial_epsilon=0.01, m
         #print(f"Current points: {current_points}, Epsilon: {epsilon}")
         # END OF DEBUG STATEMENT -------------------------------------------
 
-        if current_points == target_points:
+        if current_points == target_points or low == high:
             break
 
         # Narrow the search range based on the number of points
@@ -94,7 +103,13 @@ def calculate_epsilon_for_points(contour, target_points, initial_epsilon=0.01, m
     print(f"Final Epsilon: {epsilon}, Final Number of Points: {len(approx)}")
     return approx
 
-def compare_img(orig_image_path, star_coords):
+# Segment the image to get the coordinates of the user's drawing
+def get_coords_from_drawing(image_path, desired_points):
+    _, orig_points = segment_img(image_path, desired_points)
+    return orig_points.reshape(-1, 2)
+
+# Compare user generated image to star image
+def compare_img(orig_coords, star_coords):
     """
     Compare the user's drawing (original image) to the star constellation.
 
@@ -105,10 +120,6 @@ def compare_img(orig_image_path, star_coords):
     Returns:
         float: A similarity score (lower means more similar).
     """
-    # Segment the image to get the coordinates of the user's drawing
-    _, orig_coords = segment_img(orig_image_path, len(star_coords))
-    orig_coords = orig_coords.reshape(-1, 2)
-
 
     # If both structures are empty, they are identical
     if len(orig_coords) == 0 and len(star_coords) == 0:
@@ -132,4 +143,83 @@ def compare_img(orig_image_path, star_coords):
     
     return score
 
-segment_img(image_path, desired_points)
+# Get coordinates of all stars in a star image
+def get_coordinates_by_index(index_value, table_name="coordinates"):
+    """Fetch all (x, y) coordinates for a given index."""
+    response = supabase.table(table_name).select("coord-x, coord-y").eq("index", index_value).execute()
+    
+    if response.data:
+        coords = [(row["coord-x"], row["coord-y"]) for row in response.data]
+        return coords
+    else:
+        return []
+
+def find_best_star(usr_image_path):
+    """
+    Given a path to the user's image, find the star index in the Supabase database
+    that most closely resembles the user's drawing.
+    
+    For each star image, the user's drawing is simplified into the same number
+    of points as the star image. These simplified coordinates are cached for reuse.
+    
+    Returns:
+        (best_index, best_score) if found, otherwise (None, None).
+    """
+    
+    # Cache to store user coordinates for a given number of points
+    user_coords_cache = {}
+    
+    # 1. Fetch last index from the "coordinates" table
+    response = supabase.table("coordinates") \
+        .select("*") \
+        .order("index", desc=True) \
+        .limit(1) \
+        .execute()
+
+    if not response.data:
+        print("No star data found in the database.")
+        return None, None
+    
+    last_index = response.data[0].get("index")
+    if last_index is None or last_index < 1:
+        print("Invalid last index found in the database.")
+        return None, None
+
+    # 2. Select a random sample of 100 star indexes
+    star_indexes = random.sample(range(0, last_index + 1), min(50, last_index + 1))
+
+    best_index = None
+    best_score = float('inf')
+    
+    print(f"Selected star indexes: {star_indexes}")
+
+    # 3. Iterate over the random star indexes and compare
+    for idx in star_indexes:
+        # Get the star constellation coordinates for this index
+        star_coords = get_coordinates_by_index(idx, "coordinates")  # Returns list of (x, y)
+        if not star_coords:
+            continue  # Skip if no coordinates for this index
+        
+        # Use the number of star points as the desired points for user drawing
+        num_points = len(star_coords)
+        
+        # Check if we already computed the user coordinates for this number of points
+        if num_points in user_coords_cache:
+            user_coords = user_coords_cache[num_points]
+            print(f"Reusing cached user coordinates for {num_points} points.")
+        else:
+            user_coords = get_coords_from_drawing(usr_image_path, num_points)
+            user_coords_cache[num_points] = user_coords
+        
+        # Compare the user drawing to the star constellation using the Chamfer distance
+        score = compare_img(user_coords, star_coords)
+        
+        # Track the best (lowest) score
+        if score < best_score:
+            best_score = score
+            best_index = idx
+    
+    return best_index
+    
+
+print(find_best_star("/Users/shonusengupta/Downloads/IMG-1156.jpg"))
