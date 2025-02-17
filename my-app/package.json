@@ -9,15 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-tooltip": "^1.1.8",
     "@supabase/supabase-js": "^2.48.1",
     "@types/file-saver": "^2.0.7",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "file-saver": "^2.0.5",
     "lucide-react": "^0.475.0",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "tailwindcss-animate": "^1.0.7"
+    "react-tsparticles": "^2.12.2",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "tsparticles-engine": "^2.12.0",
+    "tsparticles-slim": "^2.12.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
