@@ -1,67 +1,67 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import { saveAs } from "file-saver";
-import { Loader2 } from "lucide-react";
+import type React from "react"
+import { useRef, useState, useEffect } from "react"
+import { Loader2, Share2 } from "lucide-react"
 
 export default function DrawingSection() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [color, setColor] = useState("#FFFFFF");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [isDrawing, setIsDrawing] = useState(false)
+  const [color, setColor] = useState("#FFFFFF")
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.fillStyle = "#000000";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-    }
-  }, []);
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    ctx.fillStyle = "#000000"
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+  }, [])
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    setIsDrawing(true);
-    draw(e);
-  };
+    setIsDrawing(true)
+    draw(e)
+  }
 
   const stopDrawing = () => {
-    setIsDrawing(false);
-  };
+    setIsDrawing(false)
+  }
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
+    if (!isDrawing) return
 
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (ctx && canvas) {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.lineCap = "round";
+    const canvas = canvasRef.current
+    const ctx = canvas?.getContext("2d")
+    if (!ctx || !canvas) return
 
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+    ctx.strokeStyle = color
+    ctx.lineWidth = 2
+    ctx.lineCap = "round"
 
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    }
-  };
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    ctx.lineTo(x, y)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+  }
 
   const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (ctx && canvas) {
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-  };
+    const canvas = canvasRef.current
+    const ctx = canvas?.getContext("2d")
+    if (!ctx || !canvas) return
 
-  const processImage = async () => {
+    ctx.fillStyle = "#000000"
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+  }
+
+    const processImage = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -100,13 +100,26 @@ export default function DrawingSection() {
     }
   };
 
+  const shareConstellation = async () => {
+    if (!processedImageUrl) return
+
+    try {
+      await navigator.share({
+        title: "My Star Constellation",
+        text: "Check out the constellation I created with Star Glazing!",
+        url: window.location.href,
+      })
+    } catch (error) {
+      console.error("Error sharing:", error)
+    }
+  }
+
   return (
     <div className="flex flex-col items-center mt-8 px-4">
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 animate-fade-in">
         <h2 className="text-2xl font-bold text-white mb-2">Be a Cosmic Trailblazer</h2>
         <p className="text-gray-300">
-          Just as our ancestors found shapes in the stars, it's your turn to paint the cosmos. What wonders will you
-          discover?
+          Just as our ancestors found shapes in the stars, it's your turn to paint the cosmos.
         </p>
       </div>
       <div className="mb-4 flex space-x-4">
@@ -114,23 +127,23 @@ export default function DrawingSection() {
           type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
-          className="w-10 h-10 rounded-full cursor-pointer"
+          className="w-10 h-10 rounded-full cursor-pointer hover:scale-110 transition-transform"
           title="Choose star color"
         />
         <button
           onClick={clearCanvas}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-all hover:scale-105"
         >
           Clear Sky
         </button>
         <button
           onClick={processImage}
           disabled={isProcessing}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isProcessing ? (
             <>
-              <Loader2 className="animate-spin mr-2" />
+              <Loader2 className="animate-spin" />
               Processing...
             </>
           ) : (
@@ -138,7 +151,9 @@ export default function DrawingSection() {
           )}
         </button>
       </div>
-      <div className="flex flex-col md:flex-row gap-8 items-start">
+
+      <div className="relative group">
+        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
         <canvas
           ref={canvasRef}
           width={800}
@@ -147,23 +162,33 @@ export default function DrawingSection() {
           onMouseUp={stopDrawing}
           onMouseMove={draw}
           onMouseLeave={stopDrawing}
-          className="border-4 border-white rounded-lg cursor-crosshair"
+          className="relative border-4 border-white rounded-lg cursor-crosshair"
         />
-        {processedImageUrl && (
-          <div className="flex flex-col items-center">
-            <h3 className="text-xl font-bold text-white mb-4">Your Constellation</h3>
+      </div>
+
+      {processedImageUrl && (
+        <div className="flex flex-col items-center mt-8 animate-fade-in">
+          <div className="flex items-center gap-4 mb-4">
+            <h3 className="text-xl font-bold text-white">Your Constellation</h3>
+            <button
+              onClick={shareConstellation}
+              className="p-2 rounded-full bg-purple-600 hover:bg-purple-700 transition-colors"
+            >
+              <Share2 className="w-5 h-5 text-white" />
+            </button>
+          </div>
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
             <img
-              src={processedImageUrl}
+              src={processedImageUrl || "/placeholder.svg"}
               alt="Processed constellation"
-              className="border-4 border-white rounded-lg"
+              className="relative border-4 border-white rounded-lg"
               style={{ maxWidth: "800px", maxHeight: "600px" }}
             />
           </div>
-        )}
-      </div>
-      <div className="mt-6 text-center max-w-2xl">
-        <p className="text-gray-300">StarGlazers.com</p>
-      </div>
+        </div>
+      )}
     </div>
-  );
+  )
 }
+

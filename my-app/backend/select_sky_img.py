@@ -48,7 +48,9 @@ TRUE_BLACK = (0,0,0)
 
 # Process the images
 for i, data in enumerate(dataset):
-    if i >= 2:  # Process only the first image for demonstration
+    if i <= 1487:
+        continue
+    elif i >= 10000:  # Process only the first image for demonstration
         break
 
     # Check if 'blobmodel' exists in the data
@@ -60,7 +62,7 @@ for i, data in enumerate(dataset):
         output_path = os.path.join(output_dir, f"blobmodel_image_{i}.png")
         blobmodel_image.save(output_path, format="PNG")
 
-        print(f"Blobmodel image {i} saved as {output_path}.")
+        # print(f"Blobmodel image {i} saved as {output_path}.")
 
         # Convert PIL image to NumPy array for further processing
         img = np.array(blobmodel_image)
@@ -98,13 +100,6 @@ for i, data in enumerate(dataset):
                     # Draw the 1x1 square with white color (255, 255, 255)
                     processed_img[startY:startY + square_size, startX:startX + square_size] = (255, 255, 255)
 
-                # Data payload
-                data = {
-                    "index" : i,
-                    "coord-x" : startX,
-                    "coord-y" : startY
-                }
-
                 # Check if the coordinate already exists
                 existing_entry = (
                     supabase.table("coordinates")
@@ -115,10 +110,17 @@ for i, data in enumerate(dataset):
                     .execute()
                 )
 
+                # Data payload
+                data = {
+                    "index" : i,
+                    "coord-x" : startX,
+                    "coord-y" : startY
+                }
+
                 if not existing_entry.data:  # If no existing entry, insert
                     response = supabase.table("coordinates").insert(data).execute()
-                else:
-                    print(f"⚠️ Duplicate entry skipped: {data}")
+                # else:
+                #     print(f"⚠️ Duplicate entry skipped: {data}")
         
         # Remove 'blobmodel' img
         if os.path.exists(output_path):
@@ -134,5 +136,7 @@ for i, data in enumerate(dataset):
         # apply TRUE_BLACK to darker (unmasked) pixels
         processed_img[~bright_points_mask2] = TRUE_BLACK
 
+        print(f'{i}')
+
         # Save the processed image
-        cv2.imwrite(f"temp/processed_img_{i}.png", processed_img)
+        # cv2.imwrite(f"temp/processed_img_{i}.png", processed_img)
