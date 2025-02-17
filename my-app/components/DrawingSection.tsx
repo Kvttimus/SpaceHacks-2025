@@ -117,7 +117,7 @@ export default function DrawingSection() {
   return (
     <div className="flex flex-col items-center mt-8 px-4">
       <div className="text-center mb-6 animate-fade-in">
-        <h2 className="text-2xl font-bold text-white mb-2">Be a Cosmic Trailblazer</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">Be a Cosmic Trailglazer</h2>
         <p className="text-gray-300">
           Just as our ancestors found shapes in the stars, it's your turn to paint the cosmos.
         </p>
