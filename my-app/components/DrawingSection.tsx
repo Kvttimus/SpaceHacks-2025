@@ -101,31 +101,6 @@ export default function DrawingSection() {
         throw new Error("Failed to simplify the target star img");
       }
 
-      // await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Wait until `star_img.png` is available (active polling)
-      // const checkFileExists = async () => {
-      //   for (let i = 0; i < 10; i++) { // Check for 10 seconds max
-      //     const checkResponse = await fetch(`/processed-user-input/star_img.png?timestamp=${new Date().getTime()}`, {
-      //       method: "HEAD",
-      //     });
-  
-      //     if (checkResponse.ok) {
-      //       console.log("✅ star_img.png found!");
-      //       return true;
-      //     }
-  
-      //     console.log("⏳ Waiting for star_img.png...");
-      //     await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before retrying
-      //   }
-      //   return false;
-      // };
-
-      // const fileExists = await checkFileExists();
-      // if (!fileExists) {
-      //   throw new Error("❌ Timed out waiting for star_img.png");
-      // }
-
       // ----------------------------------------------------------------------------------------------------
 
       // Update only the processed image without refreshing the drawing
@@ -157,9 +132,12 @@ export default function DrawingSection() {
     <div className="flex flex-col items-center mt-8 px-4">
       <div className="text-center mb-6 animate-fade-in">
         <h2 className="text-2xl font-bold text-white mb-2">Be a Cosmic Trailglazer</h2>
-        <p className="text-gray-300">
-          Just as our ancestors found shapes in the stars, it's your turn to paint the cosmos.
-        </p>
+        <p className="text-gray-400">
+        Draw to your heart’s content, and we will find an accurate celestial system among a cutting edge </p>
+        <p className="text-gray-400">
+        100 TB dataset of astronomical observations which resemble your creation. </p>
+        <p className="text-gray-400">
+        Just as our predecessors found shapes in the stars, it's your turn to paint the cosmos. </p>
       </div>
       <div className="mb-4 flex space-x-4">
         <input
