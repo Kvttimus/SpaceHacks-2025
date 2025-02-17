@@ -8,6 +8,7 @@ and the closest looking constellation will be found.
 
 import cv2
 import numpy as np
+import math
 import os
 
 # image_path = "@my-app/public/user-input/constellation.jpg"
@@ -54,10 +55,11 @@ def segment_img(image_path, desired_points):
 
     # Draw the simplified combined contour
     cv2.drawContours(output, [approx_points.astype(int)], -1, (0, 0, 255), 2)  # Red for approximation
-
     cv2.imwrite(f"public/processed-user-input/processed_user_img.png", output)
 
-    return output
+    # Make approx points in right dimension
+
+    return output, approx_points
 
 def calculate_epsilon_for_points(contour, target_points, initial_epsilon=0.01, max_iterations=1000):
     """Find the epsilon value using binary search to reach the target number of approximation points."""
@@ -91,5 +93,43 @@ def calculate_epsilon_for_points(contour, target_points, initial_epsilon=0.01, m
 
     print(f"Final Epsilon: {epsilon}, Final Number of Points: {len(approx)}")
     return approx
+
+def compare_img(orig_image_path, star_coords):
+    """
+    Compare the user's drawing (original image) to the star constellation.
+
+    Parameters:
+        orig_image_path (str): Path to the user's drawing image.
+        star_coords (tuple): A tuple of (x, y) coordinates representing the star constellation.
+
+    Returns:
+        float: A similarity score (lower means more similar).
+    """
+    # Segment the image to get the coordinates of the user's drawing
+    _, orig_coords = segment_img(orig_image_path, len(star_coords))
+    orig_coords = orig_coords.reshape(-1, 2)
+
+
+    # If both structures are empty, they are identical
+    if len(orig_coords) == 0 and len(star_coords) == 0:
+        return 0.0
+    
+    def euclidean_distance(p, q):
+        """Compute the Euclidean distance between two points."""
+        return math.hypot(p[0] - q[0], p[1] - q[1])
+    
+    # Handle cases where one structure is empty
+    if len(orig_coords) == 0 or len(star_coords) == 0:
+        return float('inf')  # Completely dissimilar if one is empty
+    
+    # Chamfer distance calculation
+    dist_1_to_2 = sum(min(euclidean_distance(p1, p2) for p2 in star_coords) for p1 in orig_coords)
+    dist_2_to_1 = sum(min(euclidean_distance(p2, p1) for p1 in orig_coords) for p2 in star_coords)
+    
+    # Normalize the score
+    total_points = len(orig_coords) + len(star_coords)
+    score = (dist_1_to_2 + dist_2_to_1) / total_points
+    
+    return score
 
 segment_img(image_path, desired_points)
