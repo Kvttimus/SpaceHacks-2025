@@ -90,22 +90,47 @@ export default function DrawingSection() {
       // Wait a short time to ensure the processed image is saved
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // ---------------------------------------------------------------
+      // --------------------------------------------------------------------------------------------------
 
       const response2 = await fetch("/api/run-simplify-target-star", {
         method: "POST",
-        body: formData,
+        // body: formData,
       });
 
       if (!response2.ok) {
         throw new Error("Failed to simplify the target star img");
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      // ---------------------------------------------------------------
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Wait until `star_img.png` is available (active polling)
+      // const checkFileExists = async () => {
+      //   for (let i = 0; i < 10; i++) { // Check for 10 seconds max
+      //     const checkResponse = await fetch(`/processed-user-input/star_img.png?timestamp=${new Date().getTime()}`, {
+      //       method: "HEAD",
+      //     });
+  
+      //     if (checkResponse.ok) {
+      //       console.log("✅ star_img.png found!");
+      //       return true;
+      //     }
+  
+      //     console.log("⏳ Waiting for star_img.png...");
+      //     await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before retrying
+      //   }
+      //   return false;
+      // };
+
+      // const fileExists = await checkFileExists();
+      // if (!fileExists) {
+      //   throw new Error("❌ Timed out waiting for star_img.png");
+      // }
+
+      // ----------------------------------------------------------------------------------------------------
 
       // Update only the processed image without refreshing the drawing
       setProcessedImageUrl(`/processed-user-input/processed_user_img.png?timestamp=${new Date().getTime()}`);
+      setProcessedImageUrl(`/processed-user-input/star_img.png?timestamp=${new Date().getTime()}`);
     } catch (error) {
       console.error("Error processing image:", error);
       alert("Failed to process image. Please try again.");
