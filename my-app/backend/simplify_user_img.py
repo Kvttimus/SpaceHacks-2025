@@ -20,7 +20,7 @@ image_path = os.path.join(os.path.dirname(__file__), "../public/user-input/userI
 image_path = os.path.normpath(image_path)  # Normalize for cross-platform compatibility
 desired_points = 10
 
-simplified_image_path = os.path.join(os.path.dirname(__file__), "..public/processed-user-input/processed_user_img.png")
+simplified_image_path = os.path.join(os.path.dirname(__file__), "../public/processed-user-input/processed_user_img.png")
 simplified_image_path = os.path.normpath(simplified_image_path)
 
 # Replace with your actual Supabase project URL and service role key
@@ -226,5 +226,44 @@ def find_best_star(usr_image_path):
     return best_index
 
 segment_img(image_path, desired_points)
+
+
+# # -------------------------------------------------------------------------------------------------
+
+# print("RUNNING TRANSPARENT BACKGROUND!!!")
+# line_color = (255, 0, 0)  # rgb
+
+# # Load the user image
+# image = cv2.imread(simplified_image_path)
+# if image is None:
+#     print(f"Error: Failed to load image at {simplified_image_path}")
+#     exit(1)
+
+# # Convert to grayscale and apply edge detection
+# # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# # edges = cv2.Canny(gray, 50, 150)
+# edges = cv2.Canny(image, 50, 150)
+
+# # Ensure output dimensions match the original
+# image_height, image_width = image.shape[:2]
+# edges_resized = cv2.resize(edges, (image_width, image_height))
+
+# # Convert edges to transparent image with selected color
+# def apply_line_color(edges, color):
+#     rgba = np.zeros((edges.shape[0], edges.shape[1], 4), dtype=np.uint8)  # Create transparent background
+#     edge_pixels = edges > 0  # Find all edges
+#     rgba[edge_pixels] = (*color, 255)  # Set chosen color with full opacity
+#     return rgba
+
+# # Apply color to edges
+# colored_edges = apply_line_color(edges_resized, line_color)
+
+# # Save as transparent PNG
+# cv2.imwrite(simplified_image_path, colored_edges)
+# print(f"✅ Saved transparent image with color {line_color}: {simplified_image_path}")
+
+# # --------------------------------------------------------------------------------------------------
+
+
 # user_coords = get_coords_from_drawing(image_path)
 best_star_index = find_best_star(image_path)
