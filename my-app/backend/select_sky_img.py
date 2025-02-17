@@ -47,8 +47,9 @@ TRUE_BLACK = (0,0,0)
 
 
 # Process the images
+i = 2530
 for i, data in enumerate(dataset):
-    if i <= 1487:
+    if i <= 2530:
         continue
     elif i >= 10000:  # Process only the first image for demonstration
         break
