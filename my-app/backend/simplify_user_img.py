@@ -14,34 +14,14 @@ import random
 
 from supabase import create_client, Client
 
-import cv2
-import numpy as np
-import os
-
-# # Define paths
-# script_dir = os.path.dirname(os.path.abspath(__file__))
-# user_image_path = os.path.join(script_dir, "../public/user-input/userImage.png")
-# processed_image_path = os.path.join(script_dir, "../public/processed-user-input/processed_user_img.png")
-
-# # Check if the input image exists
-# if not os.path.exists(user_image_path):
-#     print("Error: User image not found at", user_image_path)
-#     exit(1)
-
-# # Load and process the image
-# image = cv2.imread(user_image_path)
-# gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-# edges = cv2.Canny(gray, 50, 150)
-
-# # Save the processed image
-# cv2.imwrite(processed_image_path, edges)
-# print("Processed image saved at", processed_image_path)
-
-
+# image_path = "@my-app/public/user-input/constellation.jpg"
 # Correct the path to reference the public/user-input folder
 image_path = os.path.join(os.path.dirname(__file__), "../public/user-input/userImage.png")
 image_path = os.path.normpath(image_path)  # Normalize for cross-platform compatibility
 desired_points = 10
+
+simplified_image_path = os.path.join(os.path.dirname(__file__), "..public/processed-user-input/processed_user_img.png")
+simplified_image_path = os.path.normpath(simplified_image_path)
 
 # Replace with your actual Supabase project URL and service role key
 SUPABASE_URL = "https://frukqmrecrlqojwkcwob.supabase.co"
@@ -242,6 +222,9 @@ def find_best_star(usr_image_path):
             best_score = score
             best_index = idx
     
+    #print(f"Best Index: {best_index}")
     return best_index
 
 segment_img(image_path, desired_points)
+# user_coords = get_coords_from_drawing(image_path)
+best_star_index = find_best_star(image_path)
