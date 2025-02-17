@@ -20,7 +20,7 @@ image_path = os.path.join(os.path.dirname(__file__), "../public/user-input/userI
 image_path = os.path.normpath(image_path)  # Normalize for cross-platform compatibility
 
 # Defining output path
-simplified_image_path = os.path.join(os.path.dirname(__file__), "..public/processed-user-input/simplified_star.png")
+simplified_image_path = os.path.join(os.path.dirname(__file__), "../public/processed-user-input/simplified_star.png")
 simplified_image_path = os.path.normpath(simplified_image_path)
 
 # Define constant values
