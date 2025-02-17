@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
     "@types/file-saver": "^2.0.7",
+    "dotenv": "^16.4.7",
     "file-saver": "^2.0.5",
     "lucide-react": "^0.475.0",
     "next": "latest",
