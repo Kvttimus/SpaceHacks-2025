@@ -55,7 +55,7 @@ def segment_img(image_path, desired_points):
 
     # Draw the simplified combined contour
     cv2.drawContours(output, [approx_points.astype(int)], -1, (0, 0, 255), 2)  # Red for approximation
-    # cv2.imwrite(f"public/processed-user-input/processed_user_img.png", output)
+    cv2.imwrite(f"public/processed-user-input/processed_user_img.png", output)
 
     # Make approx points in right dimension
 
@@ -132,8 +132,4 @@ def compare_img(orig_image_path, star_coords):
     
     return score
 
-fp = "/Users/shonusengupta/Downloads/IMG-1156.jpg"
-star_coords = [[1576, 1975],[64, 2017],[1577, 1939],[72, 178],[1577, 1451],
-[657, 0],[210, 2020],[1516, 2006],[66, 2008], [1, 1]]
-
-print(compare_img(fp, star_coords))
+segment_img(image_path, desired_points)
