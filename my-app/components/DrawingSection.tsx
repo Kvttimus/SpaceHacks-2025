@@ -90,6 +90,20 @@ export default function DrawingSection() {
       // Wait a short time to ensure the processed image is saved
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
+      // ---------------------------------------------------------------
+
+      const response2 = await fetch("/api/run-simplify-target-star", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response2.ok) {
+        throw new Error("Failed to simplify the target star img");
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // ---------------------------------------------------------------
+
       // Update only the processed image without refreshing the drawing
       setProcessedImageUrl(`/processed-user-input/processed_user_img.png?timestamp=${new Date().getTime()}`);
     } catch (error) {
