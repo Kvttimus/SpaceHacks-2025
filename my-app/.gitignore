@@ -21,6 +21,14 @@
 /build
 /venv
 
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+# Ignore user-uploaded and processed images
+public/user-input/
+public/processed-user-input/
+
 # misc
 .DS_Store
 *.pem
