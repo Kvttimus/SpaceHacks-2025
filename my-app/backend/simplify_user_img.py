@@ -221,5 +221,3 @@ def find_best_star(usr_image_path):
     
     return best_index
     
-
-print(find_best_star("/Users/shonusengupta/Downloads/IMG-1156.jpg"))
