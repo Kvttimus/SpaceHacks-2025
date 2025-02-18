@@ -138,6 +138,3 @@ for i, data in enumerate(dataset):
         processed_img[~bright_points_mask2] = TRUE_BLACK
 
         print(f'{i}')
-
-        # Save the processed image
-        # cv2.imwrite(f"temp/processed_img_{i}.png", processed_img)

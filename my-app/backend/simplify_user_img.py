@@ -14,11 +14,10 @@ import random
 
 from supabase import create_client, Client
 
-# image_path = "@my-app/public/user-input/constellation.jpg"
 # Correct the path to reference the public/user-input folder
 image_path = os.path.join(os.path.dirname(__file__), "../public/user-input/userImage.png")
 image_path = os.path.normpath(image_path)  # Normalize for cross-platform compatibility
-desired_points = 10
+desired_points = 20
 
 simplified_image_path = os.path.join(os.path.dirname(__file__), "../public/processed-user-input/processed_user_img.png")
 simplified_image_path = os.path.normpath(simplified_image_path)

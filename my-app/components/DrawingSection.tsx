@@ -61,7 +61,7 @@ export default function DrawingSection() {
     ctx.fillRect(0, 0, canvas.width, canvas.height)
   }
 
-    const processImage = async () => {
+  const processImage = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -94,23 +94,11 @@ export default function DrawingSection() {
 
       const response2 = await fetch("/api/run-simplify-target-star", {
         method: "POST",
-        // body: formData,
       });
 
       if (!response2.ok) {
         throw new Error("Failed to simplify the target star img");
       }
-
-      const resizeStarImage = () => {
-        const processedImg = document.getElementById("processedImage") as HTMLImageElement;
-        const starImg = document.getElementById("starImage") as HTMLImageElement;
-  
-        if (processedImg && starImg) {
-          starImg.style.width = `${processedImg.width}px`;
-          starImg.style.height = `${processedImg.height}px`;
-          console.log("✅ Resized `star_img.png` to match `processed_user_img.png`.");
-        }
-      };
 
       // ----------------------------------------------------------------------------------------------------
 
@@ -145,12 +133,15 @@ export default function DrawingSection() {
       <div className="text-center mb-6 animate-fade-in">
         <h2 className="text-2xl font-bold text-white mb-2">Be a Cosmic Trailglazer</h2>
         <p className="text-gray-400">
-        Draw to your heart’s content, and we will find an accurate celestial system among a cutting edge </p>
+          Draw to your heart's content, and we will find an accurate celestial system among a cutting edge
+        </p>
+        <p className="text-gray-400">100 TB dataset of astronomical observations which resemble your creation.</p>
         <p className="text-gray-400">
-        100 TB dataset of astronomical observations which resemble your creation. </p>
-        <p className="text-gray-400">
-        Just as our predecessors found shapes in the stars, it's your turn to paint the cosmos. </p>
+          Just as our predecessors found shapes in the stars, it's your turn to paint the cosmos.
+        </p>
       </div>
+
+      {/* Drawing Controls */}
       <div className="mb-4 flex space-x-4">
         <input
           type="color"
@@ -181,7 +172,8 @@ export default function DrawingSection() {
         </button>
       </div>
 
-      <div className="relative group">
+      {/* Drawing Canvas */}
+      <div className="relative group mb-8">
         <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
         <canvas
           ref={canvasRef}
@@ -195,8 +187,9 @@ export default function DrawingSection() {
         />
       </div>
 
+      {/* Processed Images Section */}
       {processedImageUrl && (
-        <div className="flex flex-col items-center mt-8 animate-fade-in">
+        <div className="flex flex-col items-center mt-32 animate-fade-in w-full max-w-[800px]">
           <div className="flex items-center gap-4 mb-4">
             <h3 className="text-xl font-bold text-white">Your Constellation</h3>
             <button
@@ -206,19 +199,26 @@ export default function DrawingSection() {
               <Share2 className="w-5 h-5 text-white" />
             </button>
           </div>
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
-            <img
-              src={processedImageUrl || "/placeholder.svg"}
-              alt="Processed constellation"
-              className="relative border-4 border-white rounded-lg"
-              style={{ maxWidth: "800px", maxHeight: "600px" }}
-            />
+
+          <div className="relative w-[600px] h-[600px] mt-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
+            <div className="relative border-4 border-white rounded-lg overflow-hidden w-[600px] h-full">
+              <img
+                src={`/processed-user-input/star_img.png?timestamp=${new Date().getTime()}`}
+                alt="Star Constellation"
+                className="absolute inset-0 w-full h-full object-contain"
+              />
+              <img
+                src={`/processed-user-input/processed_user_img.png?timestamp=${new Date().getTime()}`}
+                alt="Your Drawing"
+                className="absolute inset-0 w-full h-full object-contain mix-blend-lighten"
+              />  
+            </div>
           </div>
         </div>
       )}
-
     </div>
   )
 }
+
 
