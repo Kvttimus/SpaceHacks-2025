@@ -105,6 +105,7 @@ export default function DrawingSection() {
 
       // Update only the processed image without refreshing the drawing
       setProcessedImageUrl(`/processed-user-input/processed_user_img.png?timestamp=${new Date().getTime()}`);
+      setProcessedImageUrl(`/user-input/userImage.png?timestamp=${new Date().getTime()}`);
       setProcessedImageUrl(`/processed-user-input/star_img.png?timestamp=${new Date().getTime()}`);
     } catch (error) {
       console.error("Error processing image:", error);
@@ -179,8 +180,8 @@ export default function DrawingSection() {
         <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
         <canvas
           ref={canvasRef}
-          width={800}
-          height={600}
+          width={200}
+          height={200}
           onMouseDown={startDrawing}
           onMouseUp={stopDrawing}
           onMouseMove={draw}
@@ -202,18 +203,25 @@ export default function DrawingSection() {
             </button>
           </div>
 
-          <div className="relative w-[600px] h-[600px] mt-4">
+          <div className="relative w-[200px] h-[200px] mt-4">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
-            <div className="relative border-4 border-white rounded-lg overflow-hidden w-[600px] h-full">
+            <div className="relative border-4 border-white rounded-lg overflow-hidden w-[200px] h-full">
               <img
                 src={`/processed-user-input/star_img.png?timestamp=${new Date().getTime()}`}
                 alt="Star Constellation"
                 className="absolute inset-0 w-full h-full object-contain"
               />
               <img
-                src={`/processed-user-input/processed_user_img.png?timestamp=${new Date().getTime()}`}
+                // src={`/processed-user-input/processed_user_img.png?timestamp=${new Date().getTime()}`}
+                src={`/user-input/userImage.png?timestamp=${new Date().getTime()}`}
                 alt="Your Drawing"
                 className="absolute inset-0 w-full h-full object-contain mix-blend-lighten"
+              />  
+              <img
+                src={`/processed-user-input/processed_user_img.png?timestamp=${new Date().getTime()}`}
+                // src={`/user-input/userImage.png?timestamp=${new Date().getTime()}`}
+                alt="Your Drawing"
+                className="absolute inset-0 w-full h-full object-contain mix-blend-lighten opacity-50"
               />  
             </div>
           </div>

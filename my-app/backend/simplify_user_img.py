@@ -200,6 +200,14 @@ def find_best_star(usr_image_path):
         # Compare the user drawing to the star constellation using the Chamfer distance
         score = compare_img(user_coords, star_coords)
         
+        # DEBUG =----------------------------------------------------------------------------------------------
+
+        print(f"INDEX: {idx}   ---   SCORE: {score}")
+        print(f"APPROX: {user_coords}   ---   STAR: {star_coords}\n")
+
+        # DEBUG =----------------------------------------------------------------------------------------------
+
+
         # Track the best (lowest) score
         if score < best_score:
             best_score = score
@@ -207,9 +215,3 @@ def find_best_star(usr_image_path):
     
     #print(f"Best Index: {best_index}")
     return best_index
-
-segment_img(image_path, desired_points)
-
-
-# user_coords = get_coords_from_drawing(image_path)
-best_star_index = find_best_star(image_path)
