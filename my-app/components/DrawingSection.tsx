@@ -147,7 +147,9 @@ export default function DrawingSection() {
           type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
-          className="w-10 h-10 rounded-full cursor-pointer hover:scale-110 transition-transform"
+          // className="w-10 h-10 rounded-full cursor-pointer hover:scale-110 transition-transform"
+          className="w-10 h-10 rounded-full cursor-pointer hover:scale-110 transition-transform 
+          [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded-full"
           title="Choose star color"
         />
         <button
